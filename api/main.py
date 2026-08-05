@@ -4,7 +4,8 @@ SunuDiag - API REST servant le modele paludisme (Lab 2).
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 import joblib
-import pandas as pd
+import pandas as pd  
+from fastapi.middleware.cors import CORSMiddleware
 
 # Création de l'application FastAPI
 app = FastAPI(
@@ -12,6 +13,14 @@ app = FastAPI(
     description="Pre-diagnostic du paludisme (modele DataSANTE-221). "
                 "Un pre-diagnostic n'est pas un diagnostic medical.",
     version="2.0",
+)
+
+# Autoriser le navigateur à appeler l'API depuis une autre origine
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Le modele est charge UNE SEULE FOIS, au demarrage du serveur
