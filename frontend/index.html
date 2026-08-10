@@ -5,78 +5,277 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SunuDiag - Pré-diagnostic du paludisme</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+        
+        * { font-family: 'Inter', sans-serif; }
+        
+        /* Animation de fond */
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .animated-bg {
+            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a1a2e);
+            background-size: 400% 400%;
+            animation: gradientMove 15s ease infinite;
+            position: relative;
+        }
+        
+        /* Effet de particules flottantes */
+        .particle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.3;
+            animation: floatParticle 20s infinite ease-in-out;
+        }
+        
+        @keyframes floatParticle {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-100px) rotate(180deg); }
+        }
+        
+        /* Carte avec effet glassmorphisme amélioré */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Input avec effet lumineux */
+        .glow-input {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .glow-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.3);
+            outline: none;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .glow-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        /* Bouton avec effet néon */
+        .neon-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
+            background-size: 200% 200%;
+            animation: shimmer 3s ease infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .neon-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.5);
+        }
+        
+        .neon-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .neon-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg) translateX(-100%);
+            transition: 0.6s;
+        }
+        
+        .neon-btn:hover::before {
+            transform: rotate(45deg) translateX(100%);
+        }
+        
+        /* Résultat avec effet de pulse */
+        @keyframes resultPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        .result-card {
+            animation: resultPulse 2s ease-in-out infinite;
+        }
+        
+        /* Label avec effet glow */
+        .label-glow {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Sélecteur personnalisé */
+        .custom-select {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: white;
+            cursor: pointer;
+        }
+        
+        .custom-select option {
+            background: #1a1a2e;
+            color: white;
+        }
+        
+        /* Badge de statut */
+        .status-badge {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: #818cf8;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Icône de chargement */
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-emerald-50 min-h-screen p-4">
-    <div class="max-w-md mx-auto">
-        <!-- En-tête personnalisé -->
-        <header class="text-center mb-6">
-            <div class="text-6xl mb-2">🩺</div>
-            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-600">
+<body class="animated-bg min-h-screen p-4 flex items-center justify-center relative">
+    
+    <!-- Particules flottantes -->
+    <div class="particle" style="width: 300px; height: 300px; background: radial-gradient(circle, rgba(99,102,241,0.1), transparent); top: -100px; right: -100px;"></div>
+    <div class="particle" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(139,92,246,0.08), transparent); bottom: -150px; left: -150px; animation-delay: -5s;"></div>
+    <div class="particle" style="width: 200px; height: 200px; background: radial-gradient(circle, rgba(168,85,247,0.1), transparent); top: 50%; left: 50%; transform: translate(-50%, -50%); animation-delay: -10s;"></div>
+
+    <div class="max-w-md w-full mx-auto relative z-10">
+        <!-- En-tête premium -->
+        <header class="text-center mb-8">
+            <div class="relative inline-block">
+                <div class="text-7xl mb-3 animate-bounce" style="animation-duration: 3s;">🩺</div>
+                <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 blur-2xl opacity-20 rounded-full"></div>
+            </div>
+            <h1 class="text-5xl font-extrabold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent tracking-tight">
                 SunuDiag
             </h1>
-            <p class="text-slate-600 font-medium">Pré-diagnostic du paludisme</p>
-            <p class="text-xs text-slate-400 mt-1">Par <span class="font-semibold">Libasse Gassama</span> - M1 IABD</p>
+            <p class="text-indigo-300 font-medium mt-1 text-lg">✨ Pré-diagnostic intelligent</p>
+            <div class="flex items-center justify-center gap-2 mt-2">
+                <span class="status-badge">● En ligne</span>
+                <span class="text-xs text-indigo-400/60">v2.0</span>
+            </div>
+            <p class="text-xs text-indigo-400/50 mt-3">Par <span class="font-semibold text-indigo-300">Libasse Gassama</span> · M1 IABD</p>
         </header>
 
-        <!-- Formulaire personnalisé -->
-        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 space-y-4 border border-white/50">
+        <!-- Formulaire premium -->
+        <div class="glass-card rounded-3xl p-7 space-y-5">
+            
             <!-- Âge -->
             <div>
-                <label for="age" class="block text-sm font-medium text-slate-700">Âge (années)</label>
+                <label for="age" class="label-glow text-sm flex items-center gap-2">
+                    <span>👤</span> Âge
+                </label>
                 <input type="number" id="age" value="34" 
-                       class="mt-1 w-full rounded-lg border border-slate-300 p-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
-                <p class="text-xs text-slate-400 mt-1">📌 Valeur usuelle : 5 à 85 ans</p>
+                       class="glow-input mt-1.5 w-full rounded-xl p-3 text-white placeholder-white/30">
+                <p class="text-xs text-indigo-400/40 mt-1.5 ml-1">📌 5 à 85 ans</p>
             </div>
 
             <!-- Température -->
             <div>
-                <label for="fievre" class="block text-sm font-medium text-slate-700">Température (°C)</label>
+                <label for="fievre" class="label-glow text-sm flex items-center gap-2">
+                    <span>🌡️</span> Température
+                </label>
                 <input type="number" id="fievre" step="0.1" value="39.2" 
-                       class="mt-1 w-full rounded-lg border border-slate-300 p-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
-                <p class="text-xs text-slate-400 mt-1">📌 Valeur usuelle : 36.0 à 41.5 °C</p>
+                       class="glow-input mt-1.5 w-full rounded-xl p-3 text-white placeholder-white/30">
+                <p class="text-xs text-indigo-400/40 mt-1.5 ml-1">📌 36.0 à 41.5 °C</p>
             </div>
 
             <!-- Glycémie -->
             <div>
-                <label for="glycemie" class="block text-sm font-medium text-slate-700">Glycémie (mmol/L)</label>
+                <label for="glycemie" class="label-glow text-sm flex items-center gap-2">
+                    <span>🩸</span> Glycémie
+                </label>
                 <input type="number" id="glycemie" step="0.1" value="5.8" 
-                       class="mt-1 w-full rounded-lg border border-slate-300 p-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
-                <p class="text-xs text-slate-400 mt-1">📌 Valeur usuelle : 3.0 à 18.0 mmol/L</p>
+                       class="glow-input mt-1.5 w-full rounded-xl p-3 text-white placeholder-white/30">
+                <p class="text-xs text-indigo-400/40 mt-1.5 ml-1">📌 3.0 à 18.0 mmol/L</p>
             </div>
 
             <!-- Hémoglobine -->
             <div>
-                <label for="hemoglobine" class="block text-sm font-medium text-slate-700">Hémoglobine (g/dL)</label>
+                <label for="hemoglobine" class="label-glow text-sm flex items-center gap-2">
+                    <span>💉</span> Hémoglobine
+                </label>
                 <input type="number" id="hemoglobine" step="0.1" value="13.1" 
-                       class="mt-1 w-full rounded-lg border border-slate-300 p-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
-                <p class="text-xs text-slate-400 mt-1">📌 Valeur usuelle : 6.0 à 17.0 g/dL</p>
+                       class="glow-input mt-1.5 w-full rounded-xl p-3 text-white placeholder-white/30">
+                <p class="text-xs text-indigo-400/40 mt-1.5 ml-1">📌 6.0 à 17.0 g/dL</p>
             </div>
 
             <!-- Saison -->
             <div>
-                <label for="saison" class="block text-sm font-medium text-slate-700">Saison</label>
-                <select id="saison" class="mt-1 w-full rounded-lg border border-slate-300 p-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
+                <label for="saison" class="label-glow text-sm flex items-center gap-2">
+                    <span>🌍</span> Saison
+                </label>
+                <select id="saison" class="custom-select mt-1.5 w-full rounded-xl p-3">
                     <option value="1">🌧️ Saison des pluies</option>
                     <option value="0">☀️ Saison sèche</option>
                 </select>
             </div>
 
-            <!-- Bouton Analyser -->
+            <!-- Bouton -->
             <button id="btn" onclick="analyser()" 
-                    class="w-full bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white font-semibold py-3 rounded-lg transition duration-300 transform hover:scale-[1.02] shadow-md">
-                🩺 Analyser
+                    class="neon-btn w-full text-white font-bold py-3.5 rounded-xl mt-2 text-lg tracking-wide">
+                <span id="btn-text">🚀 Lancer l'analyse</span>
             </button>
         </div>
 
         <!-- Zone de résultat -->
         <div id="resultat" class="mt-6"></div>
 
-        <!-- Pied de page avec nom -->
-        <footer class="mt-8 text-center text-xs text-slate-500 border-t border-slate-200 pt-4">
-            <p class="font-semibold text-slate-700">SunuDiag - © 2026 Libasse Gassama</p>
-            <p>Master 1 IABD - DMI/FST/UCAD</p>
-            <p class="mt-1 text-slate-400">Outil pédagogique de pré-diagnostic.</p>
-            <p class="text-slate-400">Ne remplace jamais l'avis d'un professionnel de santé.</p>
+        <!-- Pied de page -->
+        <footer class="mt-10 text-center">
+            <div class="border-t border-white/5 pt-5">
+                <p class="text-sm font-semibold text-white/80">SunuDiag · <span class="text-indigo-400">© 2026</span> Libasse Gassama</p>
+                <p class="text-xs text-white/40 mt-1">Master 1 IABD · DMI/FST/UCAD</p>
+                <div class="mt-3 flex items-center justify-center gap-2 text-[10px] text-white/30">
+                    <span>⚕️ Pédagogique</span>
+                    <span>·</span>
+                    <span>🔒 Non médical</span>
+                    <span>·</span>
+                    <span>📊 AUC 0.66</span>
+                </div>
+                <p class="text-[10px] text-white/20 mt-3 max-w-xs mx-auto">
+                    ⚠️ Outil de pré-diagnostic. Ne remplace jamais l'avis d'un professionnel de santé.
+                </p>
+            </div>
         </footer>
     </div>
 
@@ -86,10 +285,11 @@
 
         async function analyser() {
             const btn = document.getElementById("btn");
+            const btnText = document.getElementById("btn-text");
             const zone = document.getElementById("resultat");
 
             btn.disabled = true;
-            btn.textContent = "🔄 Analyse en cours...";
+            btnText.innerHTML = '<span class="loader"></span> Analyse en cours...';
             zone.innerHTML = "";
 
             const patient = {
@@ -108,7 +308,7 @@
                 });
 
                 if (!reponse.ok) {
-                    afficherErreur("❌ Données invalides (code " + reponse.status + ").");
+                    afficherErreur("❌ Données invalides (code " + reponse.status + ")");
                     return;
                 }
 
@@ -116,48 +316,77 @@
                 afficherResultat(data);
 
             } catch (e) {
-                afficherErreur("❌ API injoignable. Le serveur est-il lancé ?");
+                afficherErreur("🔌 API injoignable. Vérifie que le serveur est lancé.");
             } finally {
                 btn.disabled = false;
-                btn.textContent = "🩺 Analyser";
+                btnText.innerHTML = '🚀 Lancer l\'analyse';
             }
         }
 
         function afficherResultat(data) {
             const p = data.probabilite_paludisme;
-            let couleur = "bg-green-100 border-green-500 text-green-800";
-            let barreCouleur = "bg-green-500";
-            let emoji = "✅";
+            const pct = (p * 100).toFixed(1);
+            
+            let gradient, emoji, label;
             
             if (p >= 0.5) {
-                couleur = "bg-red-100 border-red-500 text-red-800";
-                barreCouleur = "bg-red-500";
-                emoji = "🔴";
+                gradient = 'from-red-500/20 to-red-600/20 border-red-500/40';
+                emoji = '🔴';
+                label = 'Risque élevé · Consultation urgente';
             } else if (p >= 0.3) {
-                couleur = "bg-orange-100 border-orange-500 text-orange-800";
-                barreCouleur = "bg-orange-500";
-                emoji = "🟠";
+                gradient = 'from-orange-500/20 to-orange-600/20 border-orange-500/40';
+                emoji = '🟠';
+                label = 'Risque modéré · Surveillance recommandée';
+            } else {
+                gradient = 'from-emerald-500/20 to-emerald-600/20 border-emerald-500/40';
+                emoji = '🟢';
+                label = 'Risque faible · Tranquillité';
             }
 
             document.getElementById("resultat").innerHTML = `
-                <div class="border-l-4 rounded-2xl p-5 ${couleur} shadow-md transition-all">
-                    <p class="text-sm font-medium">${emoji} Probabilité de paludisme</p>
-                    <p class="text-4xl font-bold">${(p * 100).toFixed(1)}%</p>
-                    <!-- Barre de progression -->
-                    <div class="w-full bg-gray-200 rounded-full h-3 mt-3">
-                        <div class="${barreCouleur} h-3 rounded-full transition-all duration-500" 
-                             style="width: ${p * 100}%"></div>
+                <div class="glass-card rounded-2xl p-6 border-l-4 ${gradient} result-card">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-indigo-300/70 text-xs font-medium uppercase tracking-wider">${emoji} Probabilité</p>
+                            <p class="text-5xl font-extrabold text-white mt-1">${pct}%</p>
+                        </div>
+                        <div class="text-4xl">${emoji}</div>
                     </div>
-                    <p class="mt-3 font-semibold text-lg">${data.pre_diagnostic}</p>
-                    <p class="text-xs mt-2 text-slate-500">⚠️ ${data.avertissement}</p>
+                    
+                    <!-- Barre de progression premium -->
+                    <div class="mt-4">
+                        <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-1000 ease-out" 
+                                 style="width: 0%; background: linear-gradient(90deg, #6366f1, #a855f7);"
+                                 id="progress-bar"></div>
+                        </div>
+                        <div class="flex justify-between text-[10px] text-indigo-400/40 mt-1">
+                            <span>0%</span>
+                            <span>50%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-white/5">
+                        <p class="text-white font-semibold text-lg">${data.pre_diagnostic}</p>
+                        <p class="text-indigo-300/50 text-xs mt-2 flex items-center gap-1">
+                            <span>⚠️</span> ${data.avertissement}
+                        </p>
+                    </div>
                 </div>
             `;
+
+            // Animation de la barre de progression
+            setTimeout(() => {
+                document.getElementById('progress-bar').style.width = pct + '%';
+            }, 100);
         }
 
         function afficherErreur(message) {
             document.getElementById("resultat").innerHTML = `
-                <div class="border-l-4 border-slate-500 bg-slate-100 rounded-2xl p-5 text-slate-700 shadow-md">
-                    <p class="font-medium">${message}</p>
+                <div class="glass-card rounded-2xl p-6 border-l-4 border-red-500/40">
+                    <p class="text-red-300 font-medium">${message}</p>
+                    <p class="text-indigo-300/40 text-xs mt-2">💡 Vérifie les valeurs saisies</p>
                 </div>
             `;
         }
