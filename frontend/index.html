@@ -6,74 +6,102 @@
     <title>SunuDiag - Pré-diagnostic du paludisme</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap');
         
-        * { font-family: 'Inter', sans-serif; }
+        * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
         
-        /* Animation de fond */
+        /* === ANIMATIONS DE FOND === */
         @keyframes gradientMove {
             0% { background-position: 0% 50%; }
+            25% { background-position: 100% 0%; }
             50% { background-position: 100% 50%; }
+            75% { background-position: 0% 100%; }
             100% { background-position: 0% 50%; }
         }
         
         .animated-bg {
-            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a1a2e);
+            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a1a2e, #0f0c29);
             background-size: 400% 400%;
-            animation: gradientMove 15s ease infinite;
+            animation: gradientMove 20s ease infinite;
             position: relative;
+            overflow: hidden;
         }
         
-        /* Effet de particules flottantes */
-        .particle {
+        /* === PARTICULES INTERACTIVES === */
+        .particle-container {
             position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
             border-radius: 50%;
             pointer-events: none;
-            opacity: 0.3;
-            animation: floatParticle 20s infinite ease-in-out;
+            opacity: 0;
+            transition: all 0.1s ease;
         }
         
-        @keyframes floatParticle {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-100px) rotate(180deg); }
+        .particle.active {
+            opacity: 0.15;
         }
         
-        /* Carte avec effet glassmorphisme amélioré */
+        /* === GLASSMORPHISME AMÉLIORÉ === */
         .glass-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.8);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
         }
         
-        /* Input avec effet lumineux */
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 40px 100px -20px rgba(99, 102, 241, 0.3);
+        }
+        
+        /* === INPUTS INTERACTIFS === */
         .glow-input {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid rgba(255, 255, 255, 0.08);
             color: white;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
         }
         
         .glow-input:focus {
-            border-color: #6366f1;
-            box-shadow: 0 0 25px rgba(99, 102, 241, 0.3);
+            border-color: #818cf8;
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.15), inset 0 0 30px rgba(99, 102, 241, 0.05);
             outline: none;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+            transform: scale(1.01);
         }
         
-        .glow-input::placeholder {
-            color: rgba(255, 255, 255, 0.4);
+        .glow-input:hover {
+            border-color: rgba(129, 140, 248, 0.4);
+            background: rgba(255, 255, 255, 0.06);
         }
         
-        /* Bouton avec effet néon */
+        .glow-input:active {
+            transform: scale(0.99);
+        }
+        
+        /* === BOUTON AVEC EFFETS MULTIPLES === */
         .neon-btn {
             position: relative;
             overflow: hidden;
-            transition: all 0.4s ease;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
-            background-size: 200% 200%;
-            animation: shimmer 3s ease infinite;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7, #6366f1);
+            background-size: 300% 300%;
+            animation: shimmer 4s ease infinite;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            cursor: pointer;
+            user-select: none;
         }
         
         @keyframes shimmer {
@@ -82,12 +110,13 @@
         }
         
         .neon-btn:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 0 40px rgba(99, 102, 241, 0.5);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 0 50px rgba(99, 102, 241, 0.4), 0 0 100px rgba(99, 102, 241, 0.1);
         }
         
         .neon-btn:active {
-            transform: scale(0.98);
+            transform: scale(0.96);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
         }
         
         .neon-btn::before {
@@ -98,217 +127,470 @@
             width: 200%;
             height: 200%;
             background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-            transform: rotate(45deg) translateX(-100%);
-            transition: 0.6s;
+            transform: rotate(45deg) translateX(-150%);
+            transition: 0.8s;
         }
         
         .neon-btn:hover::before {
-            transform: rotate(45deg) translateX(100%);
+            transform: rotate(45deg) translateX(150%);
         }
         
-        /* Résultat avec effet de pulse */
-        @keyframes resultPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
+        .neon-btn .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0);
+            animation: rippleAnim 0.6s linear;
+            pointer-events: none;
+        }
+        
+        @keyframes rippleAnim {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        /* === RÉSULTAT AVEC EFFET D'ENTRÉE === */
+        @keyframes slideUpFade {
+            0% {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
         
         .result-card {
-            animation: resultPulse 2s ease-in-out infinite;
+            animation: slideUpFade 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
         }
         
-        /* Label avec effet glow */
-        .label-glow {
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 600;
-            letter-spacing: 0.5px;
+        /* === BARRE DE PROGRESSION AVEC EFFET === */
+        .progress-bar {
+            transition: width 1.5s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
         }
         
-        /* Sélecteur personnalisé */
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            bottom: -4px;
+            right: -4px;
+            width: 12px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255,255,255,0.5);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .progress-bar.loaded::after {
+            opacity: 1;
+        }
+        
+        /* === SELECTEUR PERSONNALISÉ === */
         .custom-select {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid rgba(255, 255, 255, 0.08);
             color: white;
             cursor: pointer;
+            transition: all 0.4s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='white' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+        
+        .custom-select:hover {
+            border-color: rgba(129, 140, 248, 0.4);
+            background: rgba(255, 255, 255, 0.06);
+        }
+        
+        .custom-select:focus {
+            border-color: #818cf8;
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.15);
+            outline: none;
         }
         
         .custom-select option {
             background: #1a1a2e;
             color: white;
+            padding: 12px;
         }
         
-        /* Badge de statut */
+        /* === BADGE DE STATUT === */
         .status-badge {
-            background: rgba(99, 102, 241, 0.2);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            padding: 4px 12px;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 4px 14px;
             border-radius: 20px;
             font-size: 11px;
             color: #818cf8;
             display: inline-block;
-            animation: pulse 2s infinite;
+            position: relative;
         }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .status-badge .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #34d399;
+            margin-right: 6px;
+            animation: pulseDot 2s infinite;
         }
         
-        /* Icône de chargement */
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+        
+        /* === LOADER === */
         .loader {
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255,255,255,0.3);
+            width: 22px;
+            height: 22px;
+            border: 2.5px solid rgba(255,255,255,0.2);
             border-top-color: white;
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            animation: spin 0.7s linear infinite;
             display: inline-block;
-            margin-right: 10px;
+            margin-right: 12px;
+            vertical-align: middle;
         }
         
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        
+        /* === ICÔNES FLOTTANTES === */
+        .float-icon {
+            animation: floatIcon 6s ease-in-out infinite;
+        }
+        
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* === BOUTON RÉINITIALISER === */
+        .reset-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .reset-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.8);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .reset-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* === ANIMATION D'ENTRÉE DES CHAMPS === */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .field-animate {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        
+        .field-animate:nth-child(1) { animation-delay: 0.05s; }
+        .field-animate:nth-child(2) { animation-delay: 0.10s; }
+        .field-animate:nth-child(3) { animation-delay: 0.15s; }
+        .field-animate:nth-child(4) { animation-delay: 0.20s; }
+        .field-animate:nth-child(5) { animation-delay: 0.25s; }
+        
+        /* === TOOLTIP === */
+        .tooltip-trigger {
+            position: relative;
+            cursor: help;
+        }
+        
+        .tooltip-trigger:hover .tooltip-text {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        
+        .tooltip-text {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
     </style>
 </head>
 <body class="animated-bg min-h-screen p-4 flex items-center justify-center relative">
-    
-    <!-- Particules flottantes -->
-    <div class="particle" style="width: 300px; height: 300px; background: radial-gradient(circle, rgba(99,102,241,0.1), transparent); top: -100px; right: -100px;"></div>
-    <div class="particle" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(139,92,246,0.08), transparent); bottom: -150px; left: -150px; animation-delay: -5s;"></div>
-    <div class="particle" style="width: 200px; height: 200px; background: radial-gradient(circle, rgba(168,85,247,0.1), transparent); top: 50%; left: 50%; transform: translate(-50%, -50%); animation-delay: -10s;"></div>
+
+    <!-- PARTICULES INTERACTIVES -->
+    <div class="particle-container" id="particleContainer"></div>
 
     <div class="max-w-md w-full mx-auto relative z-10">
-        <!-- En-tête premium -->
+        <!-- EN-TÊTE -->
         <header class="text-center mb-8">
             <div class="relative inline-block">
-                <div class="text-7xl mb-3 animate-bounce" style="animation-duration: 3s;">🩺</div>
-                <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 blur-2xl opacity-20 rounded-full"></div>
+                <div class="text-7xl mb-3 float-icon">🩺</div>
+                <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 blur-3xl opacity-20 rounded-full"></div>
             </div>
             <h1 class="text-5xl font-extrabold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent tracking-tight">
                 SunuDiag
             </h1>
             <p class="text-indigo-300 font-medium mt-1 text-lg">✨ Pré-diagnostic intelligent</p>
-            <div class="flex items-center justify-center gap-2 mt-2">
-                <span class="status-badge">● En ligne</span>
-                <span class="text-xs text-indigo-400/60">v2.0</span>
+            <div class="flex items-center justify-center gap-3 mt-2">
+                <span class="status-badge">
+                    <span class="dot"></span> En ligne
+                </span>
+                <span class="text-xs text-indigo-400/40">v2.0</span>
+                <span class="text-xs text-indigo-400/40">|</span>
+                <span class="text-xs text-indigo-400/40">Libasse Gassama</span>
             </div>
-            <p class="text-xs text-indigo-400/50 mt-3">Par <span class="font-semibold text-indigo-300">Libasse Gassama</span> · M1 IABD</p>
         </header>
 
-        <!-- Formulaire premium -->
+        <!-- FORMULAIRE -->
         <div class="glass-card rounded-3xl p-7 space-y-5">
             
             <!-- Âge -->
-            <div>
-                <label for="age" class="label-glow text-sm flex items-center gap-2">
+            <div class="field-animate">
+                <label for="age" class="text-sm text-indigo-300/80 flex items-center gap-2 font-medium">
                     <span>👤</span> Âge
+                    <span class="tooltip-trigger ml-auto">
+                        <span class="text-indigo-400/30 text-xs">ⓘ</span>
+                        <span class="tooltip-text">Valeur usuelle : 5 à 85 ans</span>
+                    </span>
                 </label>
                 <input type="number" id="age" value="34" 
-                       class="glow-input mt-1.5 w-full rounded-xl p-3 text-white placeholder-white/30">
-                <p class="text-xs text-indigo-400/40 mt-1.5 ml-1">📌 5 à 85 ans</p>
+                       class="glow-input mt-1.5 w-full rounded-xl p-3 text-white text-lg">
+                <div class="flex justify-between text-[10px] text-indigo-400/30 mt-1.5 px-1">
+                    <span>👶 0 ans</span>
+                    <span>📊</span>
+                    <span>👴 120 ans</span>
+                </div>
             </div>
 
             <!-- Température -->
-            <div>
-                <label for="fievre" class="label-glow text-sm flex items-center gap-2">
+            <div class="field-animate">
+                <label for="fievre" class="text-sm text-indigo-300/80 flex items-center gap-2 font-medium">
                     <span>🌡️</span> Température
+                    <span class="tooltip-trigger ml-auto">
+                        <span class="text-indigo-400/30 text-xs">ⓘ</span>
+                        <span class="tooltip-text">Valeur usuelle : 36.0 à 41.5 °C</span>
+                    </span>
                 </label>
                 <input type="number" id="fievre" step="0.1" value="39.2" 
-                       class="glow-input mt-1.5 w-full rounded-xl p-3 text-white placeholder-white/30">
-                <p class="text-xs text-indigo-400/40 mt-1.5 ml-1">📌 36.0 à 41.5 °C</p>
+                       class="glow-input mt-1.5 w-full rounded-xl p-3 text-white text-lg">
+                <div class="flex justify-between text-[10px] text-indigo-400/30 mt-1.5 px-1">
+                    <span>❄️ 34°C</span>
+                    <span>🌡️</span>
+                    <span>🔥 43°C</span>
+                </div>
             </div>
 
             <!-- Glycémie -->
-            <div>
-                <label for="glycemie" class="label-glow text-sm flex items-center gap-2">
+            <div class="field-animate">
+                <label for="glycemie" class="text-sm text-indigo-300/80 flex items-center gap-2 font-medium">
                     <span>🩸</span> Glycémie
+                    <span class="tooltip-trigger ml-auto">
+                        <span class="text-indigo-400/30 text-xs">ⓘ</span>
+                        <span class="tooltip-text">Valeur usuelle : 3.0 à 18.0 mmol/L</span>
+                    </span>
                 </label>
                 <input type="number" id="glycemie" step="0.1" value="5.8" 
-                       class="glow-input mt-1.5 w-full rounded-xl p-3 text-white placeholder-white/30">
-                <p class="text-xs text-indigo-400/40 mt-1.5 ml-1">📌 3.0 à 18.0 mmol/L</p>
+                       class="glow-input mt-1.5 w-full rounded-xl p-3 text-white text-lg">
+                <div class="flex justify-between text-[10px] text-indigo-400/30 mt-1.5 px-1">
+                    <span>⬇️ 2.0</span>
+                    <span>🩸</span>
+                    <span>⬆️ 25.0</span>
+                </div>
             </div>
 
             <!-- Hémoglobine -->
-            <div>
-                <label for="hemoglobine" class="label-glow text-sm flex items-center gap-2">
+            <div class="field-animate">
+                <label for="hemoglobine" class="text-sm text-indigo-300/80 flex items-center gap-2 font-medium">
                     <span>💉</span> Hémoglobine
+                    <span class="tooltip-trigger ml-auto">
+                        <span class="text-indigo-400/30 text-xs">ⓘ</span>
+                        <span class="tooltip-text">Valeur usuelle : 6.0 à 17.0 g/dL</span>
+                    </span>
                 </label>
                 <input type="number" id="hemoglobine" step="0.1" value="13.1" 
-                       class="glow-input mt-1.5 w-full rounded-xl p-3 text-white placeholder-white/30">
-                <p class="text-xs text-indigo-400/40 mt-1.5 ml-1">📌 6.0 à 17.0 g/dL</p>
+                       class="glow-input mt-1.5 w-full rounded-xl p-3 text-white text-lg">
+                <div class="flex justify-between text-[10px] text-indigo-400/30 mt-1.5 px-1">
+                    <span>⬇️ 4.0</span>
+                    <span>💉</span>
+                    <span>⬆️ 20.0</span>
+                </div>
             </div>
 
             <!-- Saison -->
-            <div>
-                <label for="saison" class="label-glow text-sm flex items-center gap-2">
+            <div class="field-animate">
+                <label for="saison" class="text-sm text-indigo-300/80 flex items-center gap-2 font-medium">
                     <span>🌍</span> Saison
                 </label>
-                <select id="saison" class="custom-select mt-1.5 w-full rounded-xl p-3">
+                <select id="saison" class="custom-select mt-1.5 w-full rounded-xl p-3 text-white text-lg">
                     <option value="1">🌧️ Saison des pluies</option>
                     <option value="0">☀️ Saison sèche</option>
                 </select>
             </div>
 
-            <!-- Bouton -->
-            <button id="btn" onclick="analyser()" 
-                    class="neon-btn w-full text-white font-bold py-3.5 rounded-xl mt-2 text-lg tracking-wide">
-                <span id="btn-text">🚀 Lancer l'analyse</span>
-            </button>
+            <!-- Boutons -->
+            <div class="flex gap-3 mt-3">
+                <button id="btn" onclick="analyser()" 
+                        class="neon-btn flex-1 text-white font-bold py-3.5 rounded-xl text-lg tracking-wide">
+                    <span id="btn-text">🚀 Analyser</span>
+                </button>
+                <button onclick="resetForm()" 
+                        class="reset-btn px-4 py-3.5 rounded-xl text-sm flex items-center gap-1">
+                    <span>⟳</span>
+                </button>
+            </div>
         </div>
 
-        <!-- Zone de résultat -->
+        <!-- RÉSULTAT -->
         <div id="resultat" class="mt-6"></div>
 
-        <!-- Pied de page -->
+        <!-- PIED DE PAGE -->
         <footer class="mt-10 text-center">
             <div class="border-t border-white/5 pt-5">
                 <p class="text-sm font-semibold text-white/80">SunuDiag · <span class="text-indigo-400">© 2026</span> Libasse Gassama</p>
                 <p class="text-xs text-white/40 mt-1">Master 1 IABD · DMI/FST/UCAD</p>
-                <div class="mt-3 flex items-center justify-center gap-2 text-[10px] text-white/30">
+                <div class="mt-3 flex items-center justify-center gap-2 text-[10px] text-white/30 flex-wrap">
                     <span>⚕️ Pédagogique</span>
                     <span>·</span>
                     <span>🔒 Non médical</span>
                     <span>·</span>
                     <span>📊 AUC 0.66</span>
+                    <span>·</span>
+                    <span>🧪 DataSANTE-221</span>
                 </div>
-                <p class="text-[10px] text-white/20 mt-3 max-w-xs mx-auto">
+                <p class="text-[10px] text-white/20 mt-3 max-w-xs mx-auto leading-relaxed">
                     ⚠️ Outil de pré-diagnostic. Ne remplace jamais l'avis d'un professionnel de santé.
                 </p>
             </div>
         </footer>
     </div>
 
-    <!-- JavaScript -->
+    <!-- ==================== JAVASCRIPT ==================== -->
     <script>
         const API = "";
 
+        // === PARTICULES INTERACTIVES ===
+        const container = document.getElementById('particleContainer');
+        const particles = [];
+        const colors = ['#6366f1', '#8b5cf6', '#a855f7', '#ec4899', '#f59e0b'];
+
+        for (let i = 0; i < 60; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            const size = 3 + Math.random() * 8;
+            p.style.width = size + 'px';
+            p.style.height = size + 'px';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.top = Math.random() * 100 + '%';
+            p.style.background = colors[i % colors.length];
+            p.style.filter = 'blur(' + (1 + Math.random() * 3) + 'px)';
+            p.style.opacity = 0.03 + Math.random() * 0.08;
+            container.appendChild(p);
+            particles.push({
+                el: p,
+                x: parseFloat(p.style.left),
+                y: parseFloat(p.style.top),
+                vx: (Math.random() - 0.5) * 0.02,
+                vy: (Math.random() - 0.5) * 0.02,
+                size: size
+            });
+        }
+
+        let mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth) * 100;
+            mouseY = (e.clientY / window.innerHeight) * 100;
+            
+            particles.forEach(p => {
+                const dx = p.x - mouseX;
+                const dy = p.y - mouseY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 30) {
+                    const force = (30 - dist) / 30 * 2;
+                    p.el.style.opacity = 0.15 + force * 0.15;
+                    p.el.style.transform = `scale(${1 + force * 0.5})`;
+                } else {
+                    p.el.style.opacity = 0.03 + (1 - dist/150) * 0.08;
+                    p.el.style.transform = 'scale(1)';
+                }
+            });
+        });
+
+        // Animation des particules
+        function animateParticles() {
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x > 100) { p.x = 0; }
+                if (p.x < 0) { p.x = 100; }
+                if (p.y > 100) { p.y = 0; }
+                if (p.y < 0) { p.y = 100; }
+                p.el.style.left = p.x + '%';
+                p.el.style.top = p.y + '%';
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // === FONCTION ANALYSER ===
         async function analyser() {
-            const btn = document.getElementById("btn");
-            const btnText = document.getElementById("btn-text");
-            const zone = document.getElementById("resultat");
+            const btn = document.getElementById('btn');
+            const btnText = document.getElementById('btn-text');
+            const zone = document.getElementById('resultat');
 
             btn.disabled = true;
-            btnText.innerHTML = '<span class="loader"></span> Analyse en cours...';
-            zone.innerHTML = "";
+            btnText.innerHTML = '<span class="loader"></span> Analyse...';
+            zone.innerHTML = '';
 
             const patient = {
-                age: parseInt(document.getElementById("age").value),
-                glycemie: parseFloat(document.getElementById("glycemie").value),
-                hemoglobine: parseFloat(document.getElementById("hemoglobine").value),
-                fievre: parseFloat(document.getElementById("fievre").value),
-                saison: parseInt(document.getElementById("saison").value)
+                age: parseInt(document.getElementById('age').value),
+                glycemie: parseFloat(document.getElementById('glycemie').value),
+                hemoglobine: parseFloat(document.getElementById('hemoglobine').value),
+                fievre: parseFloat(document.getElementById('fievre').value),
+                saison: parseInt(document.getElementById('saison').value)
             };
 
             try {
-                const reponse = await fetch(API + "/predict", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                const reponse = await fetch(API + '/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(patient)
                 });
 
                 if (!reponse.ok) {
-                    afficherErreur("❌ Données invalides (code " + reponse.status + ")");
+                    afficherErreur('❌ Données invalides (code ' + reponse.status + ')');
                     return;
                 }
 
@@ -316,80 +598,135 @@
                 afficherResultat(data);
 
             } catch (e) {
-                afficherErreur("🔌 API injoignable. Vérifie que le serveur est lancé.");
+                afficherErreur('🔌 API injoignable. Vérifie le serveur.');
             } finally {
                 btn.disabled = false;
-                btnText.innerHTML = '🚀 Lancer l\'analyse';
+                btnText.innerHTML = '🚀 Analyser';
             }
         }
 
+        // === AFFICHER RÉSULTAT ===
         function afficherResultat(data) {
             const p = data.probabilite_paludisme;
             const pct = (p * 100).toFixed(1);
             
-            let gradient, emoji, label;
+            let gradient, emoji, label, color;
             
             if (p >= 0.5) {
                 gradient = 'from-red-500/20 to-red-600/20 border-red-500/40';
                 emoji = '🔴';
-                label = 'Risque élevé · Consultation urgente';
+                label = '🚨 Risque élevé · Consultation urgente';
+                color = 'text-red-400';
             } else if (p >= 0.3) {
                 gradient = 'from-orange-500/20 to-orange-600/20 border-orange-500/40';
                 emoji = '🟠';
-                label = 'Risque modéré · Surveillance recommandée';
+                label = '⚠️ Risque modéré · Surveillance recommandée';
+                color = 'text-orange-400';
             } else {
                 gradient = 'from-emerald-500/20 to-emerald-600/20 border-emerald-500/40';
                 emoji = '🟢';
-                label = 'Risque faible · Tranquillité';
+                label = '✅ Risque faible · Tranquillité';
+                color = 'text-emerald-400';
             }
 
-            document.getElementById("resultat").innerHTML = `
+            const html = `
                 <div class="glass-card rounded-2xl p-6 border-l-4 ${gradient} result-card">
                     <div class="flex items-start justify-between">
                         <div>
-                            <p class="text-indigo-300/70 text-xs font-medium uppercase tracking-wider">${emoji} Probabilité</p>
-                            <p class="text-5xl font-extrabold text-white mt-1">${pct}%</p>
+                            <p class="text-indigo-300/60 text-xs font-medium uppercase tracking-wider">${emoji} Probabilité</p>
+                            <p class="text-6xl font-black text-white mt-1">${pct}<span class="text-2xl text-indigo-300/40">%</span></p>
                         </div>
-                        <div class="text-4xl">${emoji}</div>
+                        <div class="text-5xl animate-bounce" style="animation-duration:2s;">${emoji}</div>
                     </div>
                     
-                    <!-- Barre de progression premium -->
                     <div class="mt-4">
-                        <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                            <div class="h-full rounded-full transition-all duration-1000 ease-out" 
-                                 style="width: 0%; background: linear-gradient(90deg, #6366f1, #a855f7);"
+                        <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full rounded-full progress-bar" 
+                                 style="width: 0%; background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);"
                                  id="progress-bar"></div>
                         </div>
-                        <div class="flex justify-between text-[10px] text-indigo-400/40 mt-1">
+                        <div class="flex justify-between text-[10px] text-indigo-400/30 mt-1.5">
                             <span>0%</span>
                             <span>50%</span>
                             <span>100%</span>
                         </div>
                     </div>
                     
-                    <div class="mt-4 pt-4 border-t border-white/5">
-                        <p class="text-white font-semibold text-lg">${data.pre_diagnostic}</p>
-                        <p class="text-indigo-300/50 text-xs mt-2 flex items-center gap-1">
+                    <div class="mt-5 pt-4 border-t border-white/5">
+                        <p class="text-white font-bold text-xl">${data.pre_diagnostic}</p>
+                        <p class="text-indigo-300/40 text-xs mt-2 flex items-center gap-1.5">
                             <span>⚠️</span> ${data.avertissement}
                         </p>
                     </div>
                 </div>
             `;
 
-            // Animation de la barre de progression
+            document.getElementById('resultat').innerHTML = html;
+
+            // Animation de la barre
             setTimeout(() => {
-                document.getElementById('progress-bar').style.width = pct + '%';
-            }, 100);
+                const bar = document.getElementById('progress-bar');
+                bar.style.width = pct + '%';
+                setTimeout(() => bar.classList.add('loaded'), 100);
+            }, 200);
         }
 
+        // === AFFICHER ERREUR ===
         function afficherErreur(message) {
-            document.getElementById("resultat").innerHTML = `
-                <div class="glass-card rounded-2xl p-6 border-l-4 border-red-500/40">
-                    <p class="text-red-300 font-medium">${message}</p>
-                    <p class="text-indigo-300/40 text-xs mt-2">💡 Vérifie les valeurs saisies</p>
+            document.getElementById('resultat').innerHTML = `
+                <div class="glass-card rounded-2xl p-6 border-l-4 border-red-500/40 result-card">
+                    <p class="text-red-300 font-medium text-lg">${message}</p>
+                    <p class="text-indigo-300/30 text-xs mt-2">💡 Vérifie les valeurs saisies</p>
                 </div>
             `;
         }
+
+        // === RÉINITIALISER ===
+        function resetForm() {
+            document.getElementById('age').value = 34;
+            document.getElementById('fievre').value = 39.2;
+            document.getElementById('glycemie').value = 5.8;
+            document.getElementById('hemoglobine').value = 13.1;
+            document.getElementById('saison').value = 1;
+            document.getElementById('resultat').innerHTML = '';
+            
+            // Effet visuel
+            const inputs = document.querySelectorAll('.glow-input');
+            inputs.forEach((input, i) => {
+                input.style.borderColor = 'rgba(99, 102, 241, 0.3)';
+                setTimeout(() => {
+                    input.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                }, 800);
+            });
+        }
+
+        // === EFFET RIPPLE SUR LE BOUTON ===
+        document.querySelector('.neon-btn').addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple';
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+            ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+            this.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+
+        // === SOUFFLE SUR LES CHAMPS ===
+        document.querySelectorAll('.glow-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+                this.parentElement.style.transition = 'transform 0.3s ease';
+            });
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+
+        console.log('🩺 SunuDiag v2.0 - Libasse Gassama');
+        console.log('📊 Modèle RandomForest - AUC 0.66');
+        console.log('⚕️ Outil pédagogique de pré-diagnostic');
     </script>
 </body>
 </html>
